@@ -21,20 +21,7 @@
 var assert = require('assert');
 var tough = require("tough-cookie");
 var config = require("./lib/config.js");
-
-async function setCookie(jar, cookieString, url) {
-  return new Promise((resolve, reject) => {
-    jar.setCookie(cookieString, url, {}, (err, cookie) => {
-      if (err) return reject(err);
-      resolve(cookie);
-    });
-  });
-}
-
-function log(message) {
-  const timestamp = new Date().toISOString();
-  console.log(message);
-};
+var { setCookie, log } = require("./lib/utils.js");
 
 async function exploitPollution() {
   const jar = new tough.CookieJar(undefined, { rejectPublicSuffixes: config.rejectPublicSuffixes });
