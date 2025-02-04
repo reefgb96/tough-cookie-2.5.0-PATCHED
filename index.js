@@ -20,18 +20,24 @@
 
 var assert = require('assert');
 var tough = require("tough-cookie");
-var config = require("./lib/config.js");
-var { setCookie, log } = require("./lib/utils.js");
+var {config, cookies} = require("./lib/config.js");
+var { setCookies } = require("./lib/util/index.js");
 
 async function exploitPollution() {
   const jar = new tough.CookieJar(undefined, { rejectPublicSuffixes: config.rejectPublicSuffixes });
 
   try {
-    // Exploit cookie
-    await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
+      // Exploit cookies
+    await setCookies(jar, [
+        cookies.exploitCookie,
+        cookies.normalCookie
+      ], config.testUrl);
 
-    // Normal cookie
-    await setCookie(jar, `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`, config.normalUrl);
+    // Exploit cookie
+    // await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
+    //
+    // // Normal cookie
+    // await setCookie(jar, `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`, config.normalUrl);
 
     // Check for pollution
     const obj = {};

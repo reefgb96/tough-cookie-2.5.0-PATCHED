@@ -35,8 +35,8 @@ var async = require('async');
 var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
-var config = require('../lib/config.js');
-var { setCookie } = require("../lib/util/index.js");
+var {config, cookies} = require('../lib/config.js');
+const {setCookie, setCookies} = require("../lib/util");
 
 var atNow = Date.now();
 
@@ -551,6 +551,11 @@ vows
             rejectPublicSuffixes: config.rejectPublicSuffixes
           });
           // try to pollute the prototype
+          // await setCookies(jar, [
+          //   `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`,
+          //   `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`
+          // ], config.testUrl);
+
           await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
 
           // Normal cookie
@@ -560,7 +565,7 @@ vows
         },
         "results in a cookie that is not affected by the attempted prototype pollution": function() {
           const pollutedObject = {};
-          assert(pollutedObject[config.cookiePath] === undefined);
+          assert.isUndefined(pollutedObject[config.cookiePath]);
         }
       }
     }
