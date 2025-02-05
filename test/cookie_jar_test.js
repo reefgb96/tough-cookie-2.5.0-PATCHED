@@ -36,7 +36,7 @@ var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
 var {config, cookies} = require('../lib/config.js');
-const {setCookie, setCookies} = require("../lib/util");
+const {setCookie, setCookies, createVulnerableJar} = require("../lib/util");
 
 var atNow = Date.now();
 
@@ -547,19 +547,10 @@ vows
     "Issue #282 - Prototype pollution": {
       "when setting a cookie with the domain __proto__": {
         topic: async function() {
-          const jar = new tough.CookieJar(undefined, {
-            rejectPublicSuffixes: config.rejectPublicSuffixes
-          });
-          // try to pollute the prototype
-          // await setCookies(jar, [
-          //   `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`,
-          //   `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`
-          // ], config.testUrl);
-
-          await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
-
-          // Normal cookie
-          await setCookie(jar, `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`, config.normalUrl);
+          // Create a vulnerable CookieJar instance.
+          const jar = createVulnerableJar();
+          // Set the cookies.
+          await setCookies(jar, cookies);
 
           this.callback();
         },
