@@ -36,7 +36,7 @@ var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
 var {config, cookies} = require('../lib/config.js');
-const {setCookie, setCookies, createVulnerableJar} = require("../lib/util");
+const {setCookies, createVulnerableJar} = require("../lib/util");
 
 var atNow = Date.now();
 

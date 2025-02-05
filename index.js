@@ -14,7 +14,7 @@
         Expected Output: "EXPLOITED SUCCESSFULLY"
 
      2. With patched package:
-        npm install ./tough-cookie-2.5.0-PATCHED.tgz && node index.js
+        npm install tough-cookie-2.5.0-PATCHED.tgz && node index.js
         Expected Output: "EXPLOIT FAILED"
 */
 
